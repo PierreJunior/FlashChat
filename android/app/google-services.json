@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "476434466042",
+    "project_id": "flash-chat-165fc",
+    "storage_bucket": "flash-chat-165fc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476434466042:android:00316aca4fcd230f51f543",
+        "android_client_info": {
+          "package_name": "co.KahoziJunior.flash_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476434466042-5qe78qj0jf9s2qvou7r5vmfvj2k7hjq5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2hFTtmTMOKjjunhDBzF_ZGxwmsi4lSgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476434466042-5qe78qj0jf9s2qvou7r5vmfvj2k7hjq5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
