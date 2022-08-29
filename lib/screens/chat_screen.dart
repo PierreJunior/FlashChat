@@ -1,9 +1,13 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
+final _firestore = FirebaseFirestore.instance;
+User? loggedInUser = FirebaseAuth.instance.currentUser;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -13,8 +17,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
+  late String messageText;
 
   @override
   void initState() {
@@ -22,16 +27,29 @@ class _ChatScreenState extends State<ChatScreen> {
     getCurrentUser();
   }
 
-  void getCurrentUser() {
+  void getCurrentUser() async {
     try {
-      final user = _auth.currentUser!;
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser.email);
-      }
+      final user = _auth.currentUser;
+      loggedInUser = user;
     } catch (e) {
       if (kDebugMode) {
         print(e);
+      }
+    }
+  }
+
+  // void getMessages() async {
+  //   final messagesGot = await _firestore.collection('messages').get();
+  //   for (var messages in messagesGot.docs) {
+  //     print(messages.data());
+  //   }
+  // }
+
+  void messagesStream() async {
+    await for (var snapshot
+        in _firestore.collection('userMessages').snapshots()) {
+      for (var userMessages in snapshot.docs) {
+        print(userMessages.data());
       }
     }
   }
@@ -57,6 +75,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            const MessagesStream(),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
@@ -64,15 +83,23 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: <Widget>[
                   Expanded(
                     child: TextField(
+                      controller: messageTextController,
                       onChanged: (value) {
-                        //Do something with the user input.
+                        messageText = value;
                       },
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                      //Implement send functionality.
+                      print('wait');
+                      messageTextController.clear();
+                      print('maybe');
+                      _firestore.collection('userMessages').add({
+                        'text': messageText,
+                        'sender': loggedInUser?.email,
+                      });
+                      print('pls');
                     },
                     child: const Text(
                       'Send',
@@ -84,6 +111,94 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MessagesStream extends StatelessWidget {
+  const MessagesStream({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore.collection('userMessages').snapshots(),
+      builder: (context, snapshot) {
+        List<MessageBubble> messagesBubbles = [];
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.lightBlueAccent,
+            ),
+          );
+        }
+        final messages = snapshot.data!.docs;
+        for (var userMessages in messages) {
+          final messageText =
+              (userMessages.data() as Map<String, dynamic>)['text'];
+          final messageSender =
+              (userMessages.data() as Map<String, dynamic>)['sender'];
+          final currentUser = loggedInUser?.email;
+          final messageBubble = MessageBubble(
+            sender: messageSender,
+            text: messageText,
+            isMe: currentUser == messageSender,
+          );
+          messagesBubbles.add(messageBubble);
+        }
+        return Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            children: messagesBubbles,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MessageBubble extends StatelessWidget {
+  const MessageBubble(
+      {Key? key, required this.sender, required this.text, required this.isMe})
+      : super(key: key);
+
+  final String sender;
+  final String text;
+  final bool isMe;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(
+            sender,
+            style: const TextStyle(fontSize: 12, color: Colors.white),
+          ),
+          Material(
+            borderRadius: isMe
+                ? const BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40))
+                : const BorderRadius.only(
+                    topRight: Radius.circular(40),
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40)),
+            color: isMe ? Colors.lightBlueAccent : Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Text(
+                text,
+                style: TextStyle(
+                    fontSize: 15, color: isMe ? Colors.white : Colors.black38),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
