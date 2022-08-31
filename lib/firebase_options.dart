@@ -47,30 +47,33 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCf5ZKgKZ_x4UusZcPDTy05RPmVyvkAShg',
-    appId: '1:476434466042:web:fc062fca1edc86d851f543',
-    messagingSenderId: '476434466042',
-    projectId: 'flash-chat-165fc',
-    authDomain: 'flash-chat-165fc.firebaseapp.com',
-    storageBucket: 'flash-chat-165fc.appspot.com',
-    measurementId: 'G-PFHHXE4TXJ',
+    apiKey: 'AIzaSyD2sRJpwnB-gp1d0IoXKAvx0u_P0LmkEs4',
+    appId: '1:90202571646:web:7a02fe267a72492d7ce92f',
+    messagingSenderId: '90202571646',
+    projectId: 'flashchat-ca9e8',
+    authDomain: 'flashchat-ca9e8.firebaseapp.com',
+    databaseURL: 'https://flashchat-ca9e8-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'flashchat-ca9e8.appspot.com',
+    measurementId: 'G-N4C21DXNGT',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA2hFTtmTMOKjjunhDBzF_ZGxwmsi4lSgU',
-    appId: '1:476434466042:android:00316aca4fcd230f51f543',
-    messagingSenderId: '476434466042',
-    projectId: 'flash-chat-165fc',
-    storageBucket: 'flash-chat-165fc.appspot.com',
+    apiKey: 'AIzaSyCg-fRS9Aj4ZI61yOcyaukZ-s3nNpSHXGw',
+    appId: '1:90202571646:android:91355a48a039b55d7ce92f',
+    messagingSenderId: '90202571646',
+    projectId: 'flashchat-ca9e8',
+    databaseURL: 'https://flashchat-ca9e8-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'flashchat-ca9e8.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD5XFks-j8qdB1uShNwHbs23TvsxDb8Dn0',
-    appId: '1:476434466042:ios:1caeaa29fd2391a451f543',
-    messagingSenderId: '476434466042',
-    projectId: 'flash-chat-165fc',
-    storageBucket: 'flash-chat-165fc.appspot.com',
-    iosClientId: '476434466042-j1o3fd5868i7ngf12qt5e75mj46j75a7.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBJl-HkFqxNPHpSOVHcSXC7Ehklq0BHkCo',
+    appId: '1:90202571646:ios:84bbe03ed92bc8cd7ce92f',
+    messagingSenderId: '90202571646',
+    projectId: 'flashchat-ca9e8',
+    databaseURL: 'https://flashchat-ca9e8-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'flashchat-ca9e8.appspot.com',
+    iosClientId: '90202571646-sqpd7qphsd2jo2lrb1q0ngavtbuj2nt2.apps.googleusercontent.com',
     iosBundleId: 'co.appbrewery.flashChat',
   );
 }

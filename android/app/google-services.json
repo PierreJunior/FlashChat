@@ -1,33 +1,34 @@
 {
   "project_info": {
-    "project_number": "476434466042",
-    "project_id": "flash-chat-165fc",
-    "storage_bucket": "flash-chat-165fc.appspot.com"
+    "project_number": "90202571646",
+    "firebase_url": "https://flashchat-ca9e8-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "flashchat-ca9e8",
+    "storage_bucket": "flashchat-ca9e8.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:476434466042:android:00316aca4fcd230f51f543",
+        "mobilesdk_app_id": "1:90202571646:android:91355a48a039b55d7ce92f",
         "android_client_info": {
           "package_name": "co.KahoziJunior.flash_chat"
         }
       },
       "oauth_client": [
         {
-          "client_id": "476434466042-5qe78qj0jf9s2qvou7r5vmfvj2k7hjq5.apps.googleusercontent.com",
+          "client_id": "90202571646-r6b88kdc519cimtr074c75fp6arbulod.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA2hFTtmTMOKjjunhDBzF_ZGxwmsi4lSgU"
+          "current_key": "AIzaSyCg-fRS9Aj4ZI61yOcyaukZ-s3nNpSHXGw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "476434466042-5qe78qj0jf9s2qvou7r5vmfvj2k7hjq5.apps.googleusercontent.com",
+              "client_id": "90202571646-r6b88kdc519cimtr074c75fp6arbulod.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

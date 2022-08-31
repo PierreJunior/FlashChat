@@ -93,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                         _saving = false;
                       } on FirebaseAuthException catch (e) {
+                        print(e);
                         _saving = false;
                         // switch (e.code) {
                         //   case "user-not-found":
