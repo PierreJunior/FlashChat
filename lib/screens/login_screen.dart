@@ -98,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() {
                             var finalmessage = messag;
                           });
-                          print(messag);
                         }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
