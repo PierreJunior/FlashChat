@@ -18,11 +18,14 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
-  bool _saving = false;
+  final bool _saving = false;
   late FToast fToast;
   late String error = ' ';
+  bool _btnActive = false;
   late String email;
   late String password;
+  final _controllerEmail = TextEditingController();
+  final _controllerPassword = TextEditingController();
   RegExp passCheck = RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
   String wrongPass = 'Password should contain a small letter and a Number';
   @override
@@ -30,6 +33,48 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.initState();
     fToast = FToast();
     fToast.init(context);
+  }
+
+  bool emptyForm() {
+    if (_controllerPassword.text.isEmpty || _controllerEmail.text.isEmpty) {
+      _btnActive;
+    } else {
+      _btnActive = true;
+    }
+    return _btnActive;
+  }
+
+  void registerCheck() async {
+    try {
+      // _saving = true;
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      if (!mounted) return;
+      Navigator.pushNamed(context, ChatScreen.id);
+    } on FirebaseAuthException catch (e) {
+      // _saving = false;
+      if (e.code == 'weak-password') {
+        errorMessage(e, wrongPass);
+      } else if (e.code == 'invalid-email') {
+        errorMessage(e, e.message.toString());
+      } else {
+        errorMessage(e, e.message.toString());
+      }
+    }
+  }
+
+  void errorMessage(FirebaseAuthException e, String message) {
+    fToast.showToast(
+        child: Text(message),
+        toastDuration: const Duration(seconds: 5),
+        positionedToastBuilder: (context, child) {
+          return Positioned(
+            bottom: 150,
+            left: 16,
+            right: 16,
+            child: child,
+          );
+        });
   }
 
   @override
@@ -61,6 +106,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   height: 48.0,
                 ),
                 TextFormField(
+                  controller: _controllerEmail,
                   validator: Validators.compose([
                     Validators.required('Email is required'),
                     Validators.email('Invalid email address'),
@@ -77,6 +123,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   height: 15.0,
                 ),
                 TextFormField(
+                  controller: _controllerPassword,
                   obscureText: false,
                   validator: Validators.compose([
                     Validators.required('Password is required'),
@@ -96,29 +143,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 RoundedButton(
                     colour: Colors.blueAccent,
-                    pressed: () async {
-                      try {
-                        _saving = true;
-                        final newUser =
-                            await _auth.createUserWithEmailAndPassword(
-                                email: email, password: password);
-                        if (!mounted) return;
-                        Navigator.pushNamed(context, ChatScreen.id);
-                      } on FirebaseAuthException catch (e) {
-                        _saving = false;
-                        //error = e.message.toString();
-                        fToast.showToast(
-                            child: Text(e.message.toString()),
-                            toastDuration: const Duration(seconds: 5),
-                            positionedToastBuilder: (context, child) {
-                              return Positioned(
-                                bottom: 150,
-                                left: 16,
-                                right: 16,
-                                child: child,
-                              );
-                            });
-                      }
+                    pressed: () {
+                      setState(() {
+                        emptyForm() == false
+                            ? fToast.showToast(
+                                child: const Text(
+                                    "Email or Password can't be empty"),
+                                toastDuration: const Duration(seconds: 5),
+                                positionedToastBuilder: (context, child) {
+                                  return Positioned(
+                                    bottom: 170,
+                                    left: 16,
+                                    right: 16,
+                                    child: child,
+                                  );
+                                })
+                            : () {
+                                registerCheck();
+                              };
+                      });
                     },
                     title: 'Register')
               ],

@@ -9,7 +9,7 @@ class RoundedButton extends StatelessWidget {
   }) : super(key: key);
 
   final Color colour;
-  final VoidCallback pressed;
+  final VoidCallback? pressed;
   final String title;
   @override
   Widget build(BuildContext context) {
