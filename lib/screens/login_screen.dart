@@ -95,14 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       } on FirebaseAuthException catch (e) {
                         print(e);
                         _saving = false;
-                        // switch (e.code) {
-                        //   case "user-not-found":
-                        //     messag = 'Wrong Email'.toString();
-                        //     break;
-                        //   case "wrong-password":
-                        //     messag = 'The password is invalid'.toString();
-                        // }
-                        // messag = 'an error occurred';
                         if (e.message != null) {
                           messag = e.message!;
                           setState(() {
@@ -116,11 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             backgroundColor: Theme.of(context).errorColor,
                           ),
                         );
-                        // print(e);
-                        // e.code == 'user-not-found'
-                        //     ? messag = 'wrong Email'
-                        //     : messag = 'Lento';
-
                       }
                     },
                     title: 'Log In')
