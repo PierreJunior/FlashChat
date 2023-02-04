@@ -47,7 +47,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void registerCheck() async {
     try {
       _saving = true;
-      final newUser =
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       if (!mounted) return;
@@ -99,6 +98,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 TextFormField(
                   controller: _controllerEmail,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: Validators.compose([
                     Validators.required('Email is required'),
                     Validators.email('Invalid email address'),
@@ -106,7 +106,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   keyboardType: TextInputType.emailAddress,
                   textAlign: TextAlign.center,
                   onChanged: (value) {
-                    email = value;
+                      email = value;
                   },
                   decoration: kTextFieldDecoration.copyWith(
                       labelText: 'Enter your Email'),
@@ -117,10 +117,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 TextFormField(
                   controller: _controllerPassword,
                   obscureText: false,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) => validatePassword(value),
                   textAlign: TextAlign.center,
                   onChanged: (value) {
-                    password = value;
+                      password = value;
                   },
                   decoration: kTextFieldDecoration.copyWith(
                       labelText: 'Enter your password'),
@@ -131,6 +132,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 TextFormField(
                   controller: _controllerPasswordRepeat,
                   obscureText: false,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) => validatePasswordRepeat(value),
                   textAlign: TextAlign.center,
                   decoration: kTextFieldDecoration.copyWith(
