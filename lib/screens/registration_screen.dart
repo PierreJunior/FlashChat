@@ -3,14 +3,15 @@ import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
 
   static const String id = 'registration_screen';
+
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
@@ -18,21 +19,20 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
-  final bool _saving = false;
-  late FToast fToast;
+  bool _saving = false;
   late String error = ' ';
   bool _btnActive = false;
   late String email;
   late String password;
   final _controllerEmail = TextEditingController();
   final _controllerPassword = TextEditingController();
+  final _controllerPasswordRepeat = TextEditingController();
   RegExp passCheck = RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
-  String wrongPass = 'Password should contain a small letter and a Number';
+  String wrongPass = "Your password must be at least 8 characters including a \n lowercase letter, an uppercase letter, and a number";
+
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
   }
 
   bool emptyForm() {
@@ -46,35 +46,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void registerCheck() async {
     try {
-      // _saving = true;
+      _saving = true;
+      final newUser =
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       if (!mounted) return;
       Navigator.pushNamed(context, ChatScreen.id);
     } on FirebaseAuthException catch (e) {
-      // _saving = false;
-      if (e.code == 'weak-password') {
-        errorMessage(e, wrongPass);
-      } else if (e.code == 'invalid-email') {
-        errorMessage(e, e.message.toString());
-      } else {
-        errorMessage(e, e.message.toString());
-      }
+      _saving = false;
+      //error = e.message.toString();
+      showNotification(e.message.toString(), 5, Colors.red);
     }
   }
 
-  void errorMessage(FirebaseAuthException e, String message) {
-    fToast.showToast(
-        child: Text(message),
-        toastDuration: const Duration(seconds: 5),
-        positionedToastBuilder: (context, child) {
-          return Positioned(
-            bottom: 150,
-            left: 16,
-            right: 16,
-            child: child,
-          );
-        });
+  void showNotification(String message, int duration, Color color) {
+    Flushbar(
+      dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+      backgroundColor: color,
+      message: message,
+      duration: Duration(seconds: duration),
+      flushbarPosition: FlushbarPosition.BOTTOM,
+    ).show(context);
   }
 
   @override
@@ -125,12 +117,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 TextFormField(
                   controller: _controllerPassword,
                   obscureText: false,
-                  validator: Validators.compose([
-                    Validators.required('Password is required'),
-                    Validators.patternRegExp(
-                        RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"),
-                        wrongPass),
-                  ]),
+                  validator: (value) => validatePassword(value),
                   textAlign: TextAlign.center,
                   onChanged: (value) {
                     password = value;
@@ -139,29 +126,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       labelText: 'Enter your password'),
                 ),
                 const SizedBox(
+                  height: 15.0,
+                ),
+                TextFormField(
+                  controller: _controllerPasswordRepeat,
+                  obscureText: false,
+                  validator: (value) => validatePasswordRepeat(value),
+                  textAlign: TextAlign.center,
+                  decoration: kTextFieldDecoration.copyWith(
+                      labelText: 'Enter your password again'),
+                ),
+                const SizedBox(
                   height: 24.0,
                 ),
                 RoundedButton(
                     colour: Colors.blueAccent,
-                    pressed: () {
-                      setState(() {
-                        emptyForm() == false
-                            ? fToast.showToast(
-                                child: const Text(
-                                    "Email or Password can't be empty"),
-                                toastDuration: const Duration(seconds: 5),
-                                positionedToastBuilder: (context, child) {
-                                  return Positioned(
-                                    bottom: 170,
-                                    left: 16,
-                                    right: 16,
-                                    child: child,
-                                  );
-                                })
-                            : () {
-                                registerCheck();
-                              };
-                      });
+                    pressed: () async {
+                      if (_formKey.currentState!.validate()){
+                        registerCheck();
+                      }
                     },
                     title: 'Register')
               ],
@@ -170,5 +153,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty || !passCheck.hasMatch(value))
+      {
+        return wrongPass;
+      }
+    return null;
+  }
+
+  String? validatePasswordRepeat(String? value) {
+    if (value == null || value.isEmpty || !passCheck.hasMatch(value) || value != password)
+    {
+      return 'Password does not match';
+    }
+    return null;
   }
 }
