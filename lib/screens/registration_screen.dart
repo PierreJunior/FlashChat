@@ -116,7 +116,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 TextFormField(
                   controller: _controllerPassword,
-                  obscureText: false,
+                  obscureText: true,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) => validatePassword(value),
                   textAlign: TextAlign.center,
@@ -131,7 +131,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 TextFormField(
                   controller: _controllerPasswordRepeat,
-                  obscureText: false,
+                  obscureText: true,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) => validatePasswordRepeat(value),
                   textAlign: TextAlign.center,
