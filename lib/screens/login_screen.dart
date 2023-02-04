@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:wc_form_validators/wc_form_validators.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
   static const String id = 'login_screen';
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -17,15 +19,43 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formkey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
   bool _saving = false;
-  late FToast fToast;
   late String email;
   late String password;
   late String messag = ' ';
+  final _controllerEmail = TextEditingController();
+  final _controllerPassword = TextEditingController();
+  RegExp passCheck = RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
+  String wrongPass = "The password that you've entered is incorrect.";
+
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
+  }
+
+  void showNotification(String message, int duration, Color color) {
+    Flushbar(
+      dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+      backgroundColor: color,
+      message: message,
+      duration: Duration(seconds: duration),
+      flushbarPosition: FlushbarPosition.BOTTOM,
+    ).show(context);
+  }
+
+  void loginCheck() async {
+    try {
+      _saving = true;
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (!mounted) return;
+      Navigator.pushNamed(context, ChatScreen.id);
+      _saving = false;
+    } on FirebaseAuthException catch (e) {
+      _saving = false;
+      if (e.message != null) {
+        messag = e.message!;
+      }
+      showNotification(messag, 5, Colors.red);
+    }
   }
 
   @override
@@ -55,6 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 48.0,
                 ),
                 TextFormField(
+                  controller: _controllerEmail,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: Validators.compose([
+                    Validators.required('Email is required'),
+                    Validators.email('Invalid email address'),
+                  ]),
                   keyboardType: TextInputType.emailAddress,
                   textAlign: TextAlign.center,
                   onChanged: (value) {
@@ -67,7 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 8.0,
                 ),
                 TextFormField(
+                  controller: _controllerPassword,
                   obscureText: true,
+                  validator: (value) => validatePassword(value),
                   textAlign: TextAlign.center,
                   onChanged: (value) {
                     password = value;
@@ -82,29 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 RoundedButton(
                     colour: Colors.lightBlueAccent,
                     pressed: () async {
-                      try {
-                        _saving = true;
-                        final newUser = await _auth.signInWithEmailAndPassword(
-                            email: email, password: password);
-                        if (newUser != null) {
-                          if (!mounted) return;
-                          Navigator.pushNamed(context, ChatScreen.id);
-                        }
-                        _saving = false;
-                      } on FirebaseAuthException catch (e) {
-                        _saving = false;
-                        if (e.message != null) {
-                          messag = e.message!;
-                          setState(() {
-                            var finalmessage = messag;
-                          });
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(messag),
-                            backgroundColor: Theme.of(context).errorColor,
-                          ),
-                        );
+                      if (_formkey.currentState!.validate()) {
+                        loginCheck();
                       }
                     },
                     title: 'Log In')
@@ -114,5 +131,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty || !passCheck.hasMatch(value))
+    {
+      return wrongPass;
+    }
+    return null;
   }
 }
