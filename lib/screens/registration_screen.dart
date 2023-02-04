@@ -124,7 +124,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       password = value;
                   },
                   decoration: kTextFieldDecoration.copyWith(
-                      labelText: 'Enter your password'),
+                      labelText: 'Enter your Password'),
                 ),
                 const SizedBox(
                   height: 15.0,
@@ -136,7 +136,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   validator: (value) => validatePasswordRepeat(value),
                   textAlign: TextAlign.center,
                   decoration: kTextFieldDecoration.copyWith(
-                      labelText: 'Enter your password again'),
+                      labelText: 'Confirm Password'),
                 ),
                 const SizedBox(
                   height: 24.0,
